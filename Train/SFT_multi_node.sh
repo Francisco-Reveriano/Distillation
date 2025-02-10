@@ -1,16 +1,16 @@
-# Reference Running: bash train/sft.sh
-# {'train_runtime': 5268.8407, 'train_samples_per_second': 0.949, 'train_steps_per_second': 0.119, 'train_loss': 0.1172730620391667, 'epoch': 5.0}
+#!/bin/bash
+
 uid="$(date +%Y%m%d_%H%M%S)"
 base_model="Qwen/Qwen2.5-7B-Instruct"
 lr=1e-5
-min_lr=0
 epochs=10
-weight_decay=1e-4 # -> the same training pipe as slurm_training
-micro_batch_size=1 # -> batch_size will be 16 if 16 gpus
-gradient_accumulation_steps=1 # requires more GPU memory
-max_steps=-1
+weight_decay=1e-4
+micro_batch_size=1
+gradient_accumulation_steps=1
 gpu_count=$(nvidia-smi -L | wc -l)
 push_to_hub=false
+
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:128
 
 torchrun --nproc-per-node ${gpu_count} --master_port 12345 \
     Train/sft.py \
@@ -35,6 +35,8 @@ torchrun --nproc-per-node ${gpu_count} --master_port 12345 \
     --adam_beta2=0.95 \
     --output_dir="ckpts/s1-${uid}" \
     --push_to_hub=${push_to_hub} \
-    --save_only_model=True \
-    # --gradient_checkpointing=True \ Enable gradient checkpointing for efficient memory usage with 8 H100 GPUs.
-    # --accelerator_config='{"gradient_accumulation_kwargs": {"sync_each_batch": true}}'
+    --save_only_model=True
+
+# If you want to enable gradient checkpointing later, you can add it in a separate invocation or uncomment the following lines:
+# --gradient_checkpointing=True \
+# --accelerator_config='{"gradient_accumulation_kwargs": {"sync_each_batch": true}}'

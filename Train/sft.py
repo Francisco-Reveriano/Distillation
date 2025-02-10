@@ -8,10 +8,11 @@ import torch
 from datasets import load_dataset
 import transformers
 import trl
+torch.cuda.empty_cache()
 
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 # Suppress FutureWarnings
 warnings.filterwarnings("ignore", category=FutureWarning)
-
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -48,11 +49,7 @@ def train():
         }
         model = transformers.AutoModelForCausalLM.from_pretrained(config.model_name, **kwargs)
     else:
-        kwargs = {
-            "attn_implementation": "flash_attention_2",
-            "use_cache": False
-        }
-        model = transformers.AutoModelForCausalLM.from_pretrained(config.model_name, **kwargs)
+        model = transformers.AutoModelForCausalLM.from_pretrained(config.model_name)
 
     # Load the dataset and split the training data into train and eval sets.
     dataset = load_dataset(config.train_file_path)
