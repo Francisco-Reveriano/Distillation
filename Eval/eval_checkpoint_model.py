@@ -39,7 +39,7 @@ def query_qwen2_5(user_message: str, model, tokenizer) -> str:
     outputs = model.generate(
         input_ids=inputs,
         attention_mask=attention_mask,
-        max_new_tokens=1024,
+        max_new_tokens=32768,
         eos_token_id=tokenizer.convert_tokens_to_ids("<|im_end|>")
     )
 
@@ -63,10 +63,7 @@ def eval_original_model():
 
     for index, row in tqdm(df.iterrows(), total=len(df), desc="Generating Responses"):
         df.loc[index, "Original_Model"] = query_qwen2_5(df.loc[index, "problem"], model, tokenizer)
-        if index == 2:
-            break
-
-    df.to_excel("Results_Checkpoint_Model.xlsx")
+        df.to_excel("Results_Checkpoint_Model_Short.xlsx")
 
 
 if __name__ == "__main__":

@@ -34,7 +34,7 @@ def query_qwen2_5(user_message: str, model, tokenizer) -> str:
     # Generate the model output with a sufficient token budget and proper EOS handling
     outputs = model.generate(
         **inputs,
-        max_new_tokens=1024,
+        max_new_tokens=32768,
         eos_token_id=tokenizer.convert_tokens_to_ids("<|im_end|>")
     )
 
@@ -58,6 +58,8 @@ def eval_original_model():
 
     for index, row in tqdm(df.iterrows(), total=len(df), desc="Generating Responses"):
         df.loc[index, "Original_Model"] = query_qwen2_5(df.loc[index, "problem"], model, tokenizer)
+        if index % 20 == 0:
+            df.to_excel("Results_Original_Model_Short.xlsx")
 
     df.to_excel("Results_Original_Model.xlsx")
 
