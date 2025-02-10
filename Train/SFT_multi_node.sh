@@ -14,7 +14,7 @@ push_to_hub=false
 
 torchrun --nproc-per-node ${gpu_count} --master_port 12345 \
     Train/sft.py \
-    --block_size=4096 \
+    --block_size=32768 \
     --per_device_train_batch_size=${micro_batch_size} \
     --per_device_eval_batch_size=${micro_batch_size} \
     --gradient_accumulation_steps=${gradient_accumulation_steps} \
@@ -35,6 +35,6 @@ torchrun --nproc-per-node ${gpu_count} --master_port 12345 \
     --adam_beta2=0.95 \
     --output_dir="ckpts/s1-${uid}" \
     --push_to_hub=${push_to_hub} \
-    --save_only_model=True
+    --save_only_model=True \
     # --gradient_checkpointing=True \ Enable gradient checkpointing for efficient memory usage with 8 H100 GPUs.
     # --accelerator_config='{"gradient_accumulation_kwargs": {"sync_each_batch": true}}'

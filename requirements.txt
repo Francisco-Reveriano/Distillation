@@ -1,3 +1,5 @@
+openpyxl
+flash-attn
 wandb
 accelerate==1.3.0
 aiohappyeyeballs==2.4.4
