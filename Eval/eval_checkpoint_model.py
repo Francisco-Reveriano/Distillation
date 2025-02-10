@@ -28,12 +28,17 @@ def query_qwen2_5(user_message: str, model, tokenizer) -> str:
 
     # Set the device and prepare inputs
     device = "cuda"
-    inputs = tokenizer(formatted_prompt, return_tensors="pt").to(device)
+    encoded_inputs = tokenizer(formatted_prompt,
+                               return_tensors="pt",
+                               padding=False)
+    inputs = encoded_inputs["input_ids"].to(device)
+    attention_mask = encoded_inputs["attention_mask"].to(device)
     model = model.to(device)
 
     # Generate the model output with a sufficient token budget and proper EOS handling
     outputs = model.generate(
-        **inputs,
+        input_ids=inputs,
+        attention_mask=attention_mask,
         max_new_tokens=1024,
         eos_token_id=tokenizer.convert_tokens_to_ids("<|im_end|>")
     )
@@ -52,14 +57,16 @@ def eval_original_model():
     df = pd.read_parquet("hf://datasets/hendrydong/gpqa_diamond/data/test-00000-of-00001.parquet")
 
     # Import Model
-    model_name = "Qwen/Qwen2.5-7B-Instruct"
+    model_name = "../ckpts/s1_20250210_074814"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForCausalLM.from_pretrained(model_name)
 
     for index, row in tqdm(df.iterrows(), total=len(df), desc="Generating Responses"):
         df.loc[index, "Original_Model"] = query_qwen2_5(df.loc[index, "problem"], model, tokenizer)
+        if index == 2:
+            break
 
-    df.to_excel("Results_Original_Model.xlsx")
+    df.to_excel("Results_Checkpoint_Model.xlsx")
 
 
 if __name__ == "__main__":
