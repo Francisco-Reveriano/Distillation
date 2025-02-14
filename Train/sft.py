@@ -13,7 +13,7 @@ import trl
 
 @dataclass
 class TrainingConfig:
-    model_name: str = field(default="Qwen/Qwen2.5-7B-Instruct")
+    model_name: str = field(default="Qwen/Qwen2.5-1.5B-Instruct")
     block_size: int = field(default=32768)
     train_file_path: Optional[str] = field(default='simplescaling/s1K_tokenized')
     dagger: bool = field(default=False)

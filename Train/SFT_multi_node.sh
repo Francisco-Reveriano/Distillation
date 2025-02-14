@@ -1,10 +1,9 @@
 uid="$(date +%Y%m%d_%H%M%S)"
-base_model="Qwen/Qwen2.5-7B-Instruct" # meta-llama/Llama-3.1-70B-Instruct
+base_model="Qwen/Qwen2.5-0.5B-Instruct" # meta-llama/Llama-3.1-70B-Instruct
 lr=1e-5
 min_lr=0
-epochs=10
+epochs=4
 micro_batch_size=1 # If 2 nodes with 8 gpus each, batch_size will be 16
-push_to_hub=true
 gradient_accumulation_steps=1
 max_steps=-1
 gpu_count=$(nvidia-smi -L | wc -l)
